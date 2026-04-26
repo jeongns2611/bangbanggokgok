@@ -57,10 +57,12 @@
 <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white"/>
 
 <br/>
+
 <img src="https://img.shields.io/badge/Zustand-000000?style=flat"/>
 <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white"/>
 
 <br/>
+
 <img src="https://img.shields.io/badge/Kakao_Map_API-FFCD00?style=flat&logo=kakao&logoColor=black"/>
 <img src="https://img.shields.io/badge/Recharts-FF6384?style=flat"/>
 
