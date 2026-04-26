@@ -1,0 +1,73 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: banggok-local-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: banggok
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      TZ: Asia/Seoul
+    volumes:
+      - postgres-local-data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d banggok" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: banggok-local-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-local-data:/data
+    command: [ "redis-server", "--appendonly", "yes" ]
+    restart: unless-stopped
+
+  pgvector-db:
+    image: ankane/pgvector:latest
+    container_name: pgvector-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: banggok
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "1234"
+      TZ: Asia/Seoul
+    volumes:
+      - pgvector-data:/var/lib/postgresql/data
+      - ./db/init_pgVector:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d banggok" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  reranker:
+    build:
+      context: ../reranker
+      dockerfile: Dockerfile
+    container_name: banggok-local-reranker
+    environment:
+      PORT: "8000"
+      RERANKER_MODEL_NAME: ${RERANKER_MODEL_NAME:-BAAI/bge-reranker-v2-m3}
+      RERANKER_MAX_LENGTH: ${RERANKER_MAX_LENGTH:-512}
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres-local-data:
+  redis-local-data:
+  pgvector-data:

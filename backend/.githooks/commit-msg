@@ -1,0 +1,63 @@
+#!/bin/sh
+
+echo "--- Commit Hook Running ---"
+MSG_FILE="$1"
+
+# 고정 prefix
+PREFIX="S14P21A104-"
+
+# 커밋 메시지 전체 읽기
+FULL_MSG=$(cat "$MSG_FILE")
+
+# 1. 단어 및 이모지 변환
+CONVERTED_MSG=$(echo "$FULL_MSG" | sed \
+  -e 's/chore/💫chore/g' \
+  -e 's/feat/✨feat/g' \
+  -e 's/fix/⛏fix/g' \
+  -e 's/refactor/💡refactor/g' \
+  -e 's/style/🎨style/g' \
+  -e 's/design/💄design/g' \
+  -e 's/docs/📝docs/g' \
+  -e 's/test/✅test/g' \
+  -e 's/update/⚡update/g' \
+  -e 's/remove/🔥remove/g' \
+  -e 's/in progress/🚧in progress/g' \
+  -e 's/HOTFIX/🚑HOTFIX/g' \
+  -e 's/add dependency/➕add dependency/g' \
+  -e 's/typo fix/✏typo fix/g')
+
+# 변환된 메시지의 첫 줄 추출
+FIRST_LINE=$(echo "$CONVERTED_MSG" | head -n 1)
+
+# merge / revert / squash / fixup 커밋은 건드리지 않음
+case "$FIRST_LINE" in
+  Merge\ *|Revert\ *|fixup!\ *|squash!\ *)
+    exit 0
+    ;;
+esac
+
+# 이미 prefix가 붙어 있는지 확인
+case "$FIRST_LINE" in
+  "$PREFIX"*)
+    echo "$CONVERTED_MSG" > "$MSG_FILE"
+    exit 0
+    ;;
+esac
+
+# --- 수정된 핵심 로직 ---
+# 첫 번째 문자가 숫자인지 확인 (정규표현식 [0-9] 사용)
+case "$FIRST_LINE" in
+  [0-9]*)
+    # 숫자로 시작하면 prefix를 붙여서 저장
+    {
+      printf "%s%s\n" "$PREFIX" "$FIRST_LINE"
+      echo "$CONVERTED_MSG" | tail -n +2
+    } > "$MSG_FILE.tmp" && mv "$MSG_FILE.tmp" "$MSG_FILE"
+    ;;
+  *)
+    # 숫자로 시작하지 않으면 이모지 변환만 적용하여 저장
+    echo "$CONVERTED_MSG" > "$MSG_FILE"
+    ;;
+esac
+
+exit 0

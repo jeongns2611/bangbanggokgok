@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+    id 'com.gradleup.shadow' version '8.3.0' // Gradle 9.0 호환 플러그인 (Gradlup Fork)
+}
+
+group = 'com.ssafy.spark'
+version = '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spark SQL (실행 환경에 이미 있으므로 provided 옵션인 compileOnly 사용)
+    compileOnly 'org.apache.spark:spark-sql_2.12:3.5.7'
+
+    // PostgreSQL Driver (JAR에 포함되어야 하므로 implementation 사용)
+    implementation 'org.postgresql:postgresql:42.7.2'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// ShadowJar 설정 (Main 클래스 지정 및 파일명 명시)
+shadowJar {
+    archiveFileName.set('spark-statistics-job.jar')
+    mergeServiceFiles() // Spark 의존성 충돌 방지를 위한 서비스 파일 병합
+    manifest {
+        attributes 'Main-Class': 'com.ssafy.spark.StatisticsAggregator'
+    }
+}
+

@@ -1,0 +1,42 @@
+{
+  "sidoName": "서울특별시",
+  "sigunguName": "강남구",
+  "dongName": "역삼동",
+  "houseType": "오피스텔",
+  "rentType": "전세",
+  "floor": "지상층",
+  "address": "서울특별시 강남구 논현로",
+  "deposit": 28000,
+  "monthlyCost": 0,
+  "managementCost": 12,
+  "managementItems": "수도,전기",
+  "floorSize": 42.1,
+  "contractStartYearMonth": 0,
+  "contractEndYearMonth": 0,
+  "buildYear": 2022,
+  "description": ""
+}
+
+부동산 매물추가 요청 예시 json만들것인데 위 예시와 다음 조건을 만족하는 매물 10개를 json 리스트로 생성해줘
+- sidoName은 "서울특별시", sigunguName은 "강남구", dongName은 다음 10개 법정동 각각 1개씩 생성.
+역삼동
+개포동
+청담동
+삼성동
+대치동
+신사동
+논현동
+압구정동
+세곡동
+자곡동
+- rentType이 '전세' 매물 5개, '월세' 매물 5개 생성 
+- houseType: ["오피스텔", "연립/다세대(빌라)", "단독/다가구(원룸)", "아파트"] 중 1개 선택
+- rentType: ["전세", "월세"] 중 1개 선택
+- floor: ["지상층", "반지하", "1층"] 중 1개 선택
+- address는 "~로" 로 끝나는 도로명 주소
+- deposit은 만원단위 보증금
+- monthlyCost는 만원단위 월세 (만약 rentType이 "전세"인 경우 0)
+- floorSize는 제곱미터(㎡) 단위 숫자
+- contractStartYearMonth, contractEndYearMonth은 반드시 0
+- description 은 매물 자연어 설명인데 200자 내외로 작성
+

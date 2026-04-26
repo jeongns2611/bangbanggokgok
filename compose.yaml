@@ -1,0 +1,150 @@
+services:
+  nginx:
+    image: nginx:stable-alpine
+    container_name: banggok-nginx
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+      - "${NGINX_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - frontend
+      - app
+    restart: unless-stopped
+    networks:
+      - default
+      - proxy_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_KAKAO_MAP_APP_KEY: ${NEXT_PUBLIC_KAKAO_MAP_APP_KEY}
+        NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${NEXT_PUBLIC_GOOGLE_CLIENT_ID}
+        NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
+    container_name: banggok-frontend
+    env_file:
+      - ./.env
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      APP_URL: ${APP_URL}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL}
+    expose:
+      - "3000"
+    restart: unless-stopped
+
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: banggok-app
+    env_file:
+      - ./.env
+    environment:
+      SERVER_PORT: "18081"
+      TZ: Asia/Seoul
+      JAVA_TOOL_OPTIONS: "-Duser.timezone=Asia/Seoul"
+    expose:
+      - "18081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      pgvector-db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      reranker:
+        condition: service_healthy
+    restart: unless-stopped
+
+  reranker:
+    build:
+      context: ./reranker
+      dockerfile: Dockerfile
+    container_name: banggok-reranker
+    environment:
+      PORT: "8000"
+      RERANKER_MODEL_NAME: ${RERANKER_MODEL_NAME:-BAAI/bge-reranker-v2-m3}
+      RERANKER_MAX_LENGTH: ${RERANKER_MAX_LENGTH:-512}
+      HF_HOME: /data/huggingface
+      TRANSFORMERS_CACHE: /data/huggingface/transformers
+    volumes:
+      - reranker_hf_cache:/data/huggingface
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 180s
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: banggok-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    expose:
+      - "6379"
+    restart: unless-stopped
+
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: banggok-postgres
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: Asia/Seoul
+    ports:
+      - "${POSTGRES_BIND_IP:-127.0.0.1}:${POSTGRES_PUBLISHED_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  pgvector-db:
+    image: ankane/pgvector:latest
+    container_name: banggok-pgvector-db
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_DB: ${SECONDARY_DB}
+      POSTGRES_USER: ${SECONDARY_USER}
+      POSTGRES_PASSWORD: ${SECONDARY_PASSWORD}
+      TZ: Asia/Seoul
+    ports:
+      - "${PGVECTOR_BIND_IP:-127.0.0.1}:${PGVECTOR_PUBLISHED_PORT:-5433}:5432"
+    volumes:
+      - pgvector_data:/var/lib/postgresql/data
+      - ./backend/db/init_pgVector:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SECONDARY_POSTGRES_USER} -d ${SECONDARY_POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  reranker_hf_cache:
+  pgvector_data:
+
+networks:
+  proxy_net:
+    external: true

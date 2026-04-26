@@ -1,0 +1,3 @@
+GRANT USAGE ON SCHEMA public TO spark_writer;
+
+GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA public TO spark_writer;

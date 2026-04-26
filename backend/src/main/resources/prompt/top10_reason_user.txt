@@ -1,0 +1,15 @@
+이 매물은 사용자 조건에 가장 부합하는 [TOP 3] 추천 매물입니다. 점수 산정 근거를 바탕으로 추천 사유를 작성해 주세요.
+
+### [1. 점수 산정 근거 및 결과]
+- **임대유형 ({itemRentType})**: {rentTypeScore}/10 (사용자 희망인 '{userRentType}'과 일치 여부 반영)
+- **주거형태 ({itemHouseType})**: {houseTypeScore}/25 (사용자 희망 목록인 [{userPreferredHouseTypes}] 포함 여부 반영)
+- **보증금 만족도**: {depositScore}/20 (사용자 범위 [{userMinDeposit}~{userMaxDeposit}] 대비 실매물 {itemDeposit})
+- **월세 만족도**: {monthlyScore}/20 (사용자 범위 [{userMinMonthly}~{userMaxMonthly}] 대비 실매물 {itemMonthly})
+- **통근 효율성**: {commuteScore}/15 (희망 {userMaxCommute}분 이내 대비 실제 {itemCommuteTime}분)
+- **면적 만족도**: {sizeScore}/10 (희망 최소 {userMinSize}㎡ 대비 실제 {itemSize}㎡)
+- **총점**: {totalScore} / 100
+
+### [2. 출력 요구사항]
+- 사용자가 설정한 **임대유형과 주거형태가 일치하여 감점 없이 만점**을 받은 점을 우선 언급해 주세요.
+- 특히 **보증금과 월세가 사용자님이 설정한 예산 범위 내에 안정적으로 들어와 있다는 점**을 강조해 주세요.
+- 통근 시간이나 면적 중 점수가 높은 항목을 '추가 장점'으로 덧붙여 2~3문장으로 완성해 주세요.

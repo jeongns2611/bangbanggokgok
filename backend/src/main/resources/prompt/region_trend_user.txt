@@ -1,0 +1,5 @@
+지역구: {SIDO_NAME} {SIGUNGU_NAME}
+최근 1년 월별 통계:
+{TREND_LINES}
+
+이 데이터를 바탕으로 사용자가 읽기 쉬운 AI 요약 카드를 JSON으로 작성하라.

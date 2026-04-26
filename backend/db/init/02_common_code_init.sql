@@ -1,0 +1,55 @@
+INSERT INTO common_code_group (id, group_name, description, created_at, created_by, updated_at, updated_by) VALUES
+(1, '매물종류', '오피스텔, 연립/다세대, 단독/다가구, 아파트', NOW(), 0, NOW(), 0),
+(2, '거래유형', '전세, 월세', NOW(), 0, NOW(), 0),
+(3, '방구조', '오픈형 원룸, 분리형 원룸, 투룸, 쓰리룸 이상, 복층', NOW(), 0, NOW(), 0),
+(4, '대출종류', '중소기업청년 전월세보증금, HUG 청년전용 버팀목, HF 청년전용 버팀목, 카카오뱅크 청년전월세', NOW(), 0, NOW(), 0),
+(5, '관리비항목', '수도, 인터넷, TV, 전기, 가스, 청소비', NOW(), 0, NOW(), 0),
+(6, '주변입지특징', '치안, 역세권, 편의시설 등', NOW(), 0, NOW(), 0),
+(7, '매물상태', '거래가능, 거래완료, 매물삭제', NOW(), 0, NOW(), 0),
+(8, '생활편의시설', '편의점, 세탁소, 카페 등', NOW(), 0, NOW(), 0),
+(9, '층구분', '반지하, 1층, 지상층', NOW(), 0, NOW(), 0);
+
+SELECT setval('common_code_group_id_seq', (SELECT MAX(id) FROM common_code_group));
+
+INSERT INTO common_code_detail (id, group_code_id, code_name, sort_order, is_active, created_at, created_by, updated_at, updated_by) VALUES
+(1, 1, '오피스텔', 1, TRUE, NOW(), 0, NOW(), 0),
+(2, 1, '연립/다세대(빌라)', 2, TRUE, NOW(), 0, NOW(), 0),
+(3, 1, '단독/다가구(원룸)', 3, TRUE, NOW(), 0, NOW(), 0),
+(4, 1, '아파트', 4, TRUE, NOW(), 0, NOW(), 0),
+(5, 2, '전세', 1, TRUE, NOW(), 0, NOW(), 0),
+(6, 2, '월세', 2, TRUE, NOW(), 0, NOW(), 0),
+(7, 2, '반전세', 3, FALSE, NOW(), 0, NOW(), 0),
+(8, 3, '오픈형 원룸', 1, TRUE, NOW(), 0, NOW(), 0),
+(9, 3, '분리형 원룸', 2, TRUE, NOW(), 0, NOW(), 0),
+(10, 3, '투룸', 3, TRUE, NOW(), 0, NOW(), 0),
+(11, 3, '쓰리룸 이상', 4, TRUE, NOW(), 0, NOW(), 0),
+(12, 3, '복층', 5, TRUE, NOW(), 0, NOW(), 0),
+(13, 4, '중소기업청년 전월세보증금', 1, TRUE, NOW(), 0, NOW(), 0),
+(14, 4, 'HUG 청년전용 버팀목', 2, TRUE, NOW(), 0, NOW(), 0),
+(15, 4, 'HF 청년전용 버팀목', 3, TRUE, NOW(), 0, NOW(), 0),
+(16, 4, '카카오뱅크 청년전월세', 4, TRUE, NOW(), 0, NOW(), 0),
+(17, 5, '수도', 1, TRUE, NOW(), 0, NOW(), 0),
+(18, 5, '인터넷', 2, TRUE, NOW(), 0, NOW(), 0),
+(19, 5, 'TV', 3, TRUE, NOW(), 0, NOW(), 0),
+(20, 5, '전기', 4, TRUE, NOW(), 0, NOW(), 0),
+(21, 5, '가스', 5, TRUE, NOW(), 0, NOW(), 0),
+(22, 5, '청소비', 6, TRUE, NOW(), 0, NOW(), 0),
+(23, 6, '치안 우수', 1, TRUE, NOW(), 0, NOW(), 0),
+(24, 6, '역세권 (800m)', 2, TRUE, NOW(), 0, NOW(), 0),
+(25, 6, '편의시설 많음', 3, TRUE, NOW(), 0, NOW(), 0),
+(26, 6, '카페/디저트 많음', 4, TRUE, NOW(), 0, NOW(), 0),
+(27, 6, '식당 많음', 5, TRUE, NOW(), 0, NOW(), 0),
+(28, 7, '거래가능', 1, TRUE, NOW(), 0, NOW(), 0),
+(29, 7, '거래완료', 2, TRUE, NOW(), 0, NOW(), 0),
+(30, 7, '매물삭제', 3, TRUE, NOW(), 0, NOW(), 0),
+(31, 8, '편의점', 1, TRUE, NOW(), 0, NOW(), 0),
+(32, 8, '세탁소', 2, TRUE, NOW(), 0, NOW(), 0),
+(33, 8, '카페', 3, TRUE, NOW(), 0, NOW(), 0),
+(34, 8, '병원', 4, TRUE, NOW(), 0, NOW(), 0),
+(35, 8, '약국', 5, TRUE, NOW(), 0, NOW(), 0),
+(36, 9, '반지하', 1, TRUE, NOW(), 0, NOW(), 0),
+(37, 9, '1층', 2, TRUE, NOW(), 0, NOW(), 0),
+(38, 9, '지상층', 3, TRUE, NOW(), 0, NOW(), 0);
+
+-- 시퀀스 동기화 (ID를 직접 넣었으므로 실행 권장)
+SELECT setval('common_code_detail_id_seq', (SELECT MAX(id) FROM common_code_detail));
