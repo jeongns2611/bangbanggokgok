@@ -39,7 +39,6 @@
 
 ## 3. 시스템 아키텍처
 ![Architecture](./docs/images/architecture.png)
-> 시스템 아키텍처 이미지는 추가 예정.
 
 - Spring Boot 서버는 사용자 요청, 인증, 매물/지역/인프라 조회 API를 담당합니다.
 - FastAPI 서버는 AI 기반 매물 추천 및 자연어 조건 처리를 담당합니다.
